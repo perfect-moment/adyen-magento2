@@ -86,7 +86,6 @@ class CheckoutDataBuilder implements BuilderInterface
         $componentStateData = $payment->getAdditionalInformation(AdyenCcDataAssignObserver::STATE_DATA);
         $requestBody = array_merge($requestBody, $componentStateData);
 
-
         if (empty($requestBody['paymentMethod']['type']) && !empty(
             $payment->getAdditionalInformation(
                 AdyenHppDataAssignObserver::BRAND_CODE
@@ -200,7 +199,6 @@ class CheckoutDataBuilder implements BuilderInterface
             }
             unset($requestBody['installments']);
         }
-
         $request['body'] = $requestBody;
 
         return $request;

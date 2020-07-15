@@ -23,16 +23,23 @@
 
 namespace Adyen\Payment\Observer;
 
+use Adyen\Payment\Observer\Adminhtml\AdyenSateDataValidator;
 use Magento\Framework\Event\Observer;
-use Magento\Quote\Api\Data\PaymentInterface;
 
 class AdyenHppDataAssignObserver extends AdyenAbstractDataAssignObserver
 {
     /**
-     * Approved root level keys from additional data array
-     *
-     * @var array
+     * @var \Adyen\Service\Validator\CheckoutStateDataValidator
      */
+    public $checkoutStateDataValidator;
+
+    public function __construct(
+        \Adyen\Service\Validator\CheckoutStateDataValidator $checkoutStateDataValidator
+
+    ) {
+        $this->checkoutStateDataValidator = $checkoutStateDataValidator;
+    }
+
     protected $approvedAdditionalDataKeys = [
         self::STATE_DATA,
         self::BRAND_CODE
@@ -57,9 +64,12 @@ class AdyenHppDataAssignObserver extends AdyenAbstractDataAssignObserver
     {
         // Get request fields
         $data = $this->readDataArgument($observer);
-
         $additionalData = $this->getValidatedAdditionalData($data);
-
+        if (!empty($additionalData[self::STATE_DATA])) {
+            $additionalData[self::STATE_DATA] = $this->checkoutStateDataValidator->getValidatedAdditionalData(
+                $additionalData[self::STATE_DATA]
+            );
+        }
         // Set additional data in the payment
         $paymentInfo = $this->readPaymentModelArgument($observer);
         foreach ($additionalData as $key => $data) {
