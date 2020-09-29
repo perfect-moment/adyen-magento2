@@ -40,8 +40,8 @@ define(
         'Adyen_Payment/js/model/threeds2',
         'Magento_Checkout/js/model/error-processor',
         'Adyen_Payment/js/model/adyen-payment-service',
-        'adyenCheckout',
-        'Adyen_Payment/js/bundle'
+        'Adyen_Payment/js/bundle',
+        'Adyen_Payment/js/model/adyen-configuration',
     ],
     function (
         $,
@@ -64,7 +64,7 @@ define(
         errorProcessor,
         adyenPaymentService,
         AdyenCheckout,
-        AdyenComponent
+        adyenConfiguration
     ) {
 
         'use strict';
@@ -92,9 +92,9 @@ define(
 
                 // initialize adyen component for general use
                 this.checkout = new AdyenCheckout({
-                    locale: this.getLocale(),
-                    originKey: this.getOriginKey(),
-                    environment: this.getCheckoutEnvironment()
+                    locale: adyenConfiguration.getLocale(),
+                    originKey: adyenConfiguration.getOriginKey(),
+                    environment: adyenConfiguration.getCheckoutEnvironment()
                 });
 
                 return this;
@@ -472,15 +472,6 @@ define(
             getCode: function () {
                 return window.checkoutConfig.payment.adyenCc.methodCode;
             },
-            getOriginKey: function () {
-                return window.checkoutConfig.payment.adyen.originKey;
-            },
-            getCheckoutEnvironment: function () {
-                return window.checkoutConfig.payment.adyen.checkoutEnvironment;
-            },
-            getLocale: function () {
-                return window.checkoutConfig.payment.adyenCc.locale;
-            },
             isActive: function () {
                 return true;
             },
@@ -501,7 +492,7 @@ define(
                 return true;
             },
             showLogo: function () {
-                return window.checkoutConfig.payment.adyen.showLogo;
+                return adyenConfiguration.showLogo();
             },
             getIcons: function (type) {
                 return window.checkoutConfig.payment.adyenCc.icons.hasOwnProperty(type)
